@@ -3,3 +3,5 @@ project:
   render:
     - talk.qmd
   output-dir: _output
+
+output-file: index.html

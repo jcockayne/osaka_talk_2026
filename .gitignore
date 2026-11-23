@@ -1,6 +1,10 @@
 /.quarto/
 /_output/
 /.conversion/
-/.DS_Store
+.DS_Store
+/cormsis-quarto.zip
+/cormsis.html
+/index.html
+/*_files/
 
 **/*.quarto_ipynb

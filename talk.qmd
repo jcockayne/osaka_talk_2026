@@ -3,14 +3,18 @@ pagetitle: "Affine Tracing — CORMSIS Seminar, 7 May 2026"
 lang: en-GB
 format:
   revealjs:
-    theme: simple
-    css: styles.css
-    width: 1280
-    height: 720
-    margin: 0.05
+    theme: [default, theme.scss]
+    css:
+      - assets/fonts/fonts.css
+      - styles.css
+    width: 1600
+    height: 900
+    margin: 0.06
     center: false
     slide-number: c/t
-    controls: true
+    controls: false
+    menu: false
+    preview-links: false
     progress: true
     hash: true
     transition: none
@@ -27,18 +31,23 @@ execute:
 ---
 
 
-## Affine Tracing {#slide-01 .cover .no-heading}
+## Affine Tracing {#slide-01 .uos-title .no-heading}
 
-::: {.cover-title}
+::: {.uos-logo}
+![](assets/uos-logo.png){fig-alt="University of Southampton"}
+:::
+
+::: {.big-title}
 Affine Tracing
+:::
 
-::: {.subtitle}
+::: {.big-subtitle}
 A New Paradigm for Implementing Probabilistic Linear Solvers
 :::
-:::
 
-::: {.cover-author}
-Jon Cockayne, CORMSIS Seminar, 7 May 2026
+::: {.author-block}
+**Jon Cockayne**<br>
+CORMSIS Seminar, 7 May 2026
 :::
 
 ::: {.notes}
@@ -157,11 +166,11 @@ Gaussian prior and affine method.
 
 - We then update to the **conditional distribution** $u \mid y \sim \mu^{y}:= \mathcal{GP}(m,k)$
 
-$$\begin{matrix}
-m(x) & = m_{0}(x) + k_{0}(x,X_{\text{tr}})A^{- 1}(y - m_{0}(X_{\text{tr}})) \\
-k(x,x') & = k_{0}(x,x') - k_{0}(x,X_{\text{tr}})A^{- 1}k_{0}(X_{\text{tr}},x') \\
-A & = k_{0}(X_{\text{tr}},X_{\text{tr}}) + \sigma^{2}I
-\end{matrix}$$
+$$\begin{aligned}
+m(x) &= m_{0}(x) + k_{0}(x,X_{\text{tr}})A^{- 1}(y - m_{0}(X_{\text{tr}})) \\
+k(x,x') &= k_{0}(x,x') - k_{0}(x,X_{\text{tr}})A^{- 1}k_{0}(X_{\text{tr}},x') \\
+A &= k_{0}(X_{\text{tr}},X_{\text{tr}}) + \sigma^{2}I
+\end{aligned}$$
 
 ::: {.notes}
 Leading order in both m and d - cubic cost in m comes from matrix inversion.
@@ -170,11 +179,11 @@ Leading order in both m and d - cubic cost in m comes from matrix inversion.
 <!-- Keynote slide 9 -->
 ## Posterior Computation and Linear Algebra {#slide-09 .compact}
 
-$$\begin{matrix}
-u \mid y & \sim \mu^{y}:= \mathcal{GP}(m,k) \\
-m(x) & = m_{0}(x) + k_{0}(x,X_{\text{tr}})A^{- 1}(y - m_{0}(X_{\text{tr}})) \\
-k(x,x') & = k_{0}(x,x') - k_{0}(x,X_{\text{tr}})A^{- 1}k_{0}(X_{\text{tr}},x')
-\end{matrix}$$
+$$\begin{aligned}
+u \mid y &\sim \mu^{y}:= \mathcal{GP}(m,k) \\
+m(x) &= m_{0}(x) + k_{0}(x,X_{\text{tr}})A^{- 1}(y - m_{0}(X_{\text{tr}})) \\
+k(x,x') &= k_{0}(x,x') - k_{0}(x,X_{\text{tr}})A^{- 1}k_{0}(X_{\text{tr}},x')
+\end{aligned}$$
 
 - $A \in \mathbb{R}^{d \times d}$. Standard "direct" solver:
 
@@ -459,11 +468,11 @@ Operates on multiple approximations of the matrix, usually based on different me
 
 - Posterior:
 
-$$\begin{matrix}
-x \mid S_{m}^{\top}b & \sim \mu_{m} = \mathcal{N}(x_{m},\Sigma_{m}) \\
-x_{m} & = x_{0} + S_{m}(S_{m}^{\top}A\Sigma_{0}A^{\top}S_{m})^{- 1}S_{m}^{\top}b \\
-\Sigma_{m} & = \Sigma_{0} - S_{m}(S_{m}^{\top}A\Sigma_{0}A^{\top}S_{m})^{- 1}S_{m}^{\top}
-\end{matrix}$$
+$$\begin{aligned}
+x \mid S_{m}^{\top}b &\sim \mu_{m} = \mathcal{N}(x_{m},\Sigma_{m}) \\
+x_{m} &= x_{0} + S_{m}(S_{m}^{\top}A\Sigma_{0}A^{\top}S_{m})^{- 1}S_{m}^{\top}b \\
+\Sigma_{m} &= \Sigma_{0} - S_{m}(S_{m}^{\top}A\Sigma_{0}A^{\top}S_{m})^{- 1}S_{m}^{\top}
+\end{aligned}$$
 
 - The matrix inside the inverse is $m \times m$.
 
@@ -505,19 +514,32 @@ This is what an implementation might look likeInstead of passing in a vector we 
 ::: {.columns}
 :::: {.column width="58%"}
 
-![](assets/slide-28-diagram.svg){.diagram fig-alt="Prior ensemble and four Gaussian posterior distributions"}
+<div class="calibration-figure" role="group" aria-label="Gaussian calibration: the original Keynote build sequence">
+  <img src="assets/calibration/prior.svg" class="calibration-layer calibration-build fragment" data-fragment-index="1" style="--build-delay: 1000ms" alt="Prior ensemble" />
+  <img src="assets/calibration/posterior-1.svg" class="calibration-layer" alt="First Gaussian posterior" />
+  <img src="assets/calibration/truth-1.svg" class="calibration-layer calibration-build fragment" data-fragment-index="0" alt="First true solution" />
+  <img src="assets/calibration/posterior-2.svg" class="calibration-layer calibration-build fragment" data-fragment-index="2" alt="Second posterior and true solution" />
+  <img src="assets/calibration/posterior-3.svg" class="calibration-layer calibration-build fragment" data-fragment-index="2" style="--build-delay: 1000ms" alt="Third posterior and true solution" />
+  <img src="assets/calibration/posterior-4.svg" class="calibration-layer calibration-build fragment" data-fragment-index="2" style="--build-delay: 2000ms" alt="Fourth posterior and true solution" />
+</div>
 
 ::::
 :::: {.column width="42%"}
 
+::: {.fragment .calibration-build data-fragment-index="0"}
 $$z_{i} = (\Sigma_{m}^{i})^{- \frac{1}{2}}(x_{m}^{i} - x^{\star ,i})$$
+:::
 
+::: {.fragment .calibration-build data-fragment-index="1"}
 $\mu_{0}$ the prior: an ensemble of problems we wish to test calibratedness wrt.
+:::
 
-$$\begin{matrix}
-x^{\star ,i} & \sim \mu_{0} \\
-z_{i} & \sim N(0,I)
-\end{matrix}$$
+::: {.fragment .calibration-build data-fragment-index="2"}
+$$\begin{aligned}
+x^{\star ,i} &\sim \mu_{0} \\
+z_{i} &\sim N(0,I)
+\end{aligned}$$
+:::
 
 ::::
 :::
@@ -577,11 +599,11 @@ Automating this is hard. E-graphs provide a solution - essentially define equiva
 <!-- Keynote slide 33 -->
 ## Recap: Gaussian Processes {#slide-33 .compact}
 
-$$\begin{matrix}
-u \mid y & \sim \mu^{y}:= \mathcal{N}(m,k) \\
-m(x) & = m_{0}(x) + k_{0}(x,X_{\text{tr}})A^{- 1}(y - m_{0}(X_{\text{tr}})) \\
-k(x,x') & = k_{0}(x,x') - k_{0}(x,X_{\text{tr}})A^{- 1}k_{0}(X_{\text{tr}},x')
-\end{matrix}$$
+$$\begin{aligned}
+u \mid y &\sim \mu^{y}:= \mathcal{N}(m,k) \\
+m(x) &= m_{0}(x) + k_{0}(x,X_{\text{tr}})A^{- 1}(y - m_{0}(X_{\text{tr}})) \\
+k(x,x') &= k_{0}(x,x') - k_{0}(x,X_{\text{tr}})A^{- 1}k_{0}(X_{\text{tr}},x')
+\end{aligned}$$
 
 - Standard solvers incur $\mathcal{O}(d^{3})$ computation.
 
@@ -594,10 +616,10 @@ k(x,x') & = k_{0}(x,x') - k_{0}(x,X_{\text{tr}})A^{- 1}k_{0}(X_{\text{tr}},x')
 
 - We have $u \mid v,y \sim \mu^{y}(v) = \mathcal{N}(m( \cdot ;v),k)$
 
-$$\begin{matrix}
-m(x;v) & = m_{0}(x) + k_{0}(x,X_{\text{tr}})v \\
-k(x,x') & = k_{0}(x,x') - k_{0}(x,X_{\text{tr}})A^{- 1}k_{0}(X_{\text{tr}},x')
-\end{matrix}$$
+$$\begin{aligned}
+m(x;v) &= m_{0}(x) + k_{0}(x,X_{\text{tr}})v \\
+k(x,x') &= k_{0}(x,x') - k_{0}(x,X_{\text{tr}})A^{- 1}k_{0}(X_{\text{tr}},x')
+\end{aligned}$$
 
 <!-- Keynote slide 35 -->
 ## The "Marginalisation Trick" {#slide-35 .compact}
@@ -608,15 +630,15 @@ k(x,x') & = k_{0}(x,x') - k_{0}(x,X_{\text{tr}})A^{- 1}k_{0}(X_{\text{tr}},x')
 
 - Marginalise $v$:
 
-$$\begin{matrix}
-m(x;v) & = m_{0}(x) + k_{0}(x,X_{\text{tr}})v \\
-k(x,x') & = k_{0}(x,x') - k_{0}(x,X_{\text{tr}})A^{- 1}k_{0}(X_{\text{tr}},x')
-\end{matrix}$$
+$$\begin{aligned}
+m(x;v) &= m_{0}(x) + k_{0}(x,X_{\text{tr}})v \\
+k(x,x') &= k_{0}(x,x') - k_{0}(x,X_{\text{tr}})A^{- 1}k_{0}(X_{\text{tr}},x')
+\end{aligned}$$
 
-$$\mapsto\quad \begin{matrix}
-\tilde{m}(x) & = m_{0}(x) + k(x,X_{\text{tr}})\overline{v} \\
-\tilde{k}(x,x') & = k_{0}(x,x') - k_{0}(x,X_{\text{tr}})Dk_{0}(X_{\text{tr}},x')
-\end{matrix}$$
+$$\mapsto\quad \begin{aligned}
+\tilde{m}(x) &= m_{0}(x) + k(x,X_{\text{tr}})\overline{v} \\
+\tilde{k}(x,x') &= k_{0}(x,x') - k_{0}(x,X_{\text{tr}})Dk_{0}(X_{\text{tr}},x')
+\end{aligned}$$
 
 <!-- Keynote slide 36 -->
 ## Calibration of CAGPs {#slide-36 .compact}
@@ -693,11 +715,11 @@ $V^{\top}D_{m}V$ often computable at $\mathcal{O}(rank(V)d^{2})$
 
 - Posterior:
 
-$$\begin{matrix}
-v \mid S_{m}^{\top}b & \sim \nu_{m} = \mathcal{N}({\overline{v}}_{m},G^{- 1} - D_{m}) \\
-v_{m} & = v_{0} + S_{m}(S_{m}^{\top}GS_{m})^{- 1}S_{m}^{\top}b \\
-D_{m} & = S_{m}(S_{m}^{\top}GS_{m})^{- 1}S_{m}^{\top}
-\end{matrix}$$
+$$\begin{aligned}
+v \mid S_{m}^{\top}b &\sim \nu_{m} = \mathcal{N}({\overline{v}}_{m},G^{- 1} - D_{m}) \\
+v_{m} &= v_{0} + S_{m}(S_{m}^{\top}GS_{m})^{- 1}S_{m}^{\top}b \\
+D_{m} &= S_{m}(S_{m}^{\top}GS_{m})^{- 1}S_{m}^{\top}
+\end{aligned}$$
 
 - We can compute ${\overline{v}}_{m}$ and $D_{m}$ **without** access to $G^{- 1}$.
 

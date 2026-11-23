@@ -1,0 +1,216 @@
+/*-- scss:defaults --*/
+
+// University of Southampton palette (Marine sampled from the logo)
+$uos: #005880;
+$uos-dark: #00435F;
+$uos-light: #CFE4F0;
+$uos-pale: #EAF3F8;
+$red: #d1495b;
+$highlight: #e8730c;  // warm orange: in-content highlights that must stand out from black
+$text: #4a4a4a;
+
+$body-bg: #ffffff;
+$body-color: $text;
+$link-color: $uos;
+$font-family-sans-serif: "Lexend", "Helvetica Neue", Arial, sans-serif;
+$presentation-font-size-root: 38px;
+$presentation-heading-font: "Roboto Slab", Georgia, serif;
+$presentation-heading-color: $uos;
+$presentation-heading-font-weight: 300;
+$presentation-h2-font-size: 1.6em;
+$code-block-font-size: 0.75em;
+
+/*-- scss:rules --*/
+.reveal {
+  font-weight: 300;
+}
+
+.reveal strong, .reveal b {
+  font-weight: 500;
+  color: #333;
+}
+
+/* UoS Marine bar across the top of every slide (drawn on the full-viewport
+   slide background, so it always runs edge to edge). */
+.reveal .slide-background-content {
+  background-image: linear-gradient(to bottom, $uos 0, $uos 2.4vh, transparent 2.4vh);
+}
+
+.reveal .progress {
+  color: $uos;
+}
+
+.reveal h2 {
+  margin-bottom: 0.8em;
+  letter-spacing: -0.01em;
+}
+
+/* Bullets: small and light, as in the sample deck */
+.reveal .slide ul {
+  list-style: none;
+  padding-left: 0;
+}
+.reveal .slide ul > li {
+  position: relative;
+  padding-left: 1.1em;
+  margin-bottom: 0.45em;
+  font-size: 0.85em;
+}
+.reveal .slide ul > li::before {
+  content: "•";
+  position: absolute;
+  left: 0.2em;
+  color: $uos;
+}
+.reveal .slide ul ul > li {
+  font-size: 0.9em;
+}
+.reveal .slide ul ul > li::before {
+  color: lighten($uos, 35%);
+}
+.reveal .slide ol > li {
+  font-size: 0.85em;
+  margin-bottom: 0.45em;
+}
+.reveal .slide ol > li::marker {
+  color: $uos;
+}
+
+/* Section / part divider slides (level-2 slides with class .part, so the deck
+   stays flat: level-1 headings would create vertical stacks, which confuse
+   arrow-key navigation) */
+.reveal section.part h2,
+.reveal section h1 {
+  font-family: "Roboto Slab", Georgia, serif;
+  font-weight: 200;
+  color: $uos;
+  font-size: 2.6em;
+  text-align: left;
+}
+
+/* Custom title slide */
+.reveal .uos-title .uos-logo img {
+  height: 120px;
+  width: auto;
+  margin: 0.4em 0 1.6em 0;
+}
+.reveal .uos-title .big-title {
+  font-family: "Roboto Slab", Georgia, serif;
+  font-weight: 200;
+  color: $uos;
+  font-size: 2.6em;
+  line-height: 1.1;
+}
+.reveal .uos-title .big-subtitle {
+  font-family: "Roboto Slab", Georgia, serif;
+  font-weight: 200;
+  color: #888;
+  font-size: 1.1em;
+  margin-top: 0.3em;
+  padding-bottom: 0.9em;
+  border-bottom: 3px solid $uos;
+  display: inline-block;
+}
+.reveal .uos-title .author-block {
+  margin-top: 1em;
+  font-size: 0.75em;
+  color: #666;
+  line-height: 1.5;
+}
+.reveal .uos-title .author-block strong {
+  color: $uos;
+}
+
+/* Co-author slide */
+.reveal .coauthors .name {
+  font-weight: 500;
+  color: #333;
+}
+.reveal .coauthors .affil {
+  color: #888;
+}
+
+/* Theorem / definition boxes: Marine border, pale-blue gradient */
+.reveal .thm {
+  border: 2px solid $uos;
+  border-left-width: 8px;
+  background: linear-gradient(180deg, #ffffff 0%, $uos-pale 100%);
+  padding: 0.5em 0.8em;
+  margin: 0.8em 0;
+  font-size: 0.8em;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.10);
+}
+.reveal .thm > p:first-child {
+  font-weight: 500;
+  color: $uos;
+  margin-top: 0;
+}
+
+/* Accent helpers (.orange kept as an alias for the main accent) */
+.reveal .accent, .reveal .orange { color: $uos; font-weight: 500; }
+.reveal .red { color: $red; }
+.reveal .hl { color: $highlight; font-weight: 500; }
+.reveal .muted { color: #aaa; font-style: italic; }
+.reveal .small { font-size: 0.7em; }
+.reveal .tiny { font-size: 0.5em; color: #888; }
+
+/* Big centred statement */
+.reveal .statement {
+  font-family: "Roboto Slab", Georgia, serif;
+  font-weight: 200;
+  font-size: 1.5em;
+  color: $uos;
+  text-align: center;
+  margin-top: 1.5em;
+}
+
+/* Open question slides */
+.reveal .qbox {
+  border-left: 6px solid $uos;
+  background: $uos-pale;
+  padding: 0.4em 0 0.4em 0.8em;
+  margin: 0.4em 0 0.9em 0;
+  font-size: 0.95em;
+  color: #333;
+}
+
+.reveal table thead th {
+  color: $uos;
+  border-bottom: 2px solid $uos;
+}
+
+.reveal .citation, .reveal a.citation {
+  color: #999;
+}
+
+.reveal .slide figure figcaption,
+.reveal .slide .figure-caption {
+  font-size: 0.5em;
+  color: #999;
+}
+
+.reveal div.sourceCode {
+  border: none;
+  border-left: 4px solid $uos-light;
+  background: transparent;
+}
+
+/* Stacked (r-stack) figures that step through with fragments: make each layer
+   fill the column, so width="100%" on the images is relative to the column. */
+.reveal .r-stack {
+  width: 100%;
+}
+.reveal .r-stack > p {
+  width: 100%;
+  margin: 0;
+}
+
+/* Aliases for the original CORMSIS slide markup. */
+.reveal .theorem { @extend .thm; }
+.reveal section.section-slide h2 {
+  font-family: $presentation-heading-font;
+  font-weight: 200;
+  color: $uos;
+  font-size: 2.6em;
+  text-align: left;
+}
