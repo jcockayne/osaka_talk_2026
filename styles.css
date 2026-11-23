@@ -1,0 +1,50 @@
+:root { --ink: #52575f; --accent: #497b5b; }
+.reveal { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 29px; font-weight: 300; color: var(--ink); }
+.reveal .slides { text-align: left; }
+.reveal .slides > section { padding: 12px 8px; box-sizing: border-box; }
+.reveal h1, .reveal h2, .reveal h3 { color: var(--ink); text-transform: none; font-weight: 400; }
+.reveal h2 { font-family: "Baskerville", "Palatino Linotype", Georgia, serif; font-size: 1.65em; line-height: 1.12; margin: 0 0 0.85em; letter-spacing: -0.035em; }
+.reveal h3 { font-size: 1.05em; margin: 0 0 0.6em; }
+.reveal p { margin: 0.55em 0; }
+.reveal ul, .reveal ol { margin-left: 1em; display: block; }
+.reveal li { margin: 0 0 0.55em; padding-left: 0.12em; }
+.reveal li::marker { font-size: 0.72em; }
+.reveal strong { font-weight: 600; }
+.reveal .columns { align-items: center; gap: 30px; }
+.reveal .column { min-width: 0; }
+.reveal .compact { font-size: 25px; }
+.reveal .compact h2 { font-size: 1.8em; }
+.reveal .compact li { margin-bottom: 0.45em; }
+.reveal .katex { font-size: 1.06em; }
+.reveal .katex-display { margin: 0.7em 0; }
+.reveal .katex-display > .katex { white-space: normal; }
+.reveal .tiny-math .katex-display { font-size: 0.72em; }
+.reveal .theorem { border: 1.5px solid var(--ink); background: linear-gradient(#e3e8ee, #fff); padding: 0.35em 0.7em; margin: 0.65em 0; }
+.reveal .references { font-size: 13px; line-height: 1.35; margin-top: 1.5em; }
+.reveal .references p { margin: 0.35em 0; }
+.reveal .section-slide { display: flex !important; flex-direction: column; justify-content: center; height: 100%; }
+.reveal .section-slide h2 { font-size: 1.9em; margin: 0; max-width: 1150px; }
+.reveal .no-heading h2 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.reveal .cover { height: 100%; }
+.reveal .cover-title { position: absolute; top: 37%; left: 8px; font-family: "Baskerville", Georgia, serif; font-size: 60px; line-height: 1.12; letter-spacing: -0.025em; }
+.reveal .cover-title p { margin: 0; }
+.reveal .subtitle { font-size: 31px; margin-top: 0.35em; }
+.reveal .cover-author { position: absolute; left: 8px; bottom: 22px; font-size: 20px; }
+.reveal img { display: block; max-width: 100%; object-fit: contain; margin: 10px auto; }
+.reveal .figure { max-height: 460px; }
+.reveal .diagram { width: 100%; max-height: 475px; }
+.reveal .wide-diagram { max-width: 1130px; height: 500px; }
+.reveal .wide-figure { width: 1110px; height: 450px; }
+.reveal .result-figure { height: 400px; max-width: 1050px; }
+.reveal .panorama { width: 1180px; height: 420px; }
+.reveal .paper { height: 630px; }
+.reveal .paper-half { max-height: 290px; }
+.reveal pre { width: 100%; font-size: 0.66em; box-shadow: none; margin: 0; }
+.reveal pre code { max-height: none; padding: 15px; line-height: 1.42; }
+.reveal code { color: #40464c; }
+.reveal .slide-number { color: #737982; background: transparent; font-size: 14px; }
+.reveal .progress { color: var(--accent); height: 3px; }
+.reveal .controls { color: var(--accent); }
+.reveal .quarto-figure { margin: 0; }
+.reveal figure { margin: 0; }
+.reveal .wide-figure, .reveal .panorama, .reveal .wide-diagram { max-width: 100%; }
