@@ -1,5 +1,5 @@
 ---
-pagetitle: "Affine Tracing — CORMSIS Seminar, 7 May 2026"
+pagetitle: "Affine Tracing — Osaka University, 26 November 2026"
 lang: en-GB
 format:
   revealjs:
@@ -47,7 +47,7 @@ A New Paradigm for Implementing Probabilistic Linear Solvers
 
 ::: {.author-block}
 **Jon Cockayne**<br>
-CORMSIS Seminar, 7 May 2026
+Osaka University, 26 November 2026
 :::
 
 ::: {.notes}
