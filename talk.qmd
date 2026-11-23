@@ -1,5 +1,5 @@
 ---
-pagetitle: "Affine Tracing — Osaka University, 26 November 2026"
+pagetitle: "Affine Tracing — The University of Osaka, 26 November 2026"
 lang: en-GB
 format:
   revealjs:
@@ -47,11 +47,11 @@ A New Paradigm for Implementing Probabilistic Linear Solvers
 
 ::: {.author-block}
 **Jon Cockayne**<br>
-University of Osaka, 26 November 2026
+The University of Osaka, 26 November 2026
 :::
 
 ::: {.notes}
-Iterations of IPMs require solutions of large linear systems.Second order optimisation - Newton type methods involve the inverse Hessian at each iteration.
+Interior-point and Newton-type methods both require linear solves. We begin with a two-dimensional example to see what remains uncertain when one of those solves stops early.
 :::
 
 ## Gauss–Seidel for a large linear system {#gauss-seidel-setup}
@@ -111,7 +111,9 @@ Hegde, Adil and Cockayne (AISTATS 2025)<br>
 <!-- Keynote slide 2 -->
 ## Co-Authors {#slide-02}
 
-- Disha Hegde (UoS)
+- Disha Hegde (Southampton)
+
+- Marvin Pförtner
 
 - Mohamed Adil
 
@@ -122,13 +124,13 @@ Hegde, Adil and Cockayne (AISTATS 2025)<br>
 - Tim Reid
 
 ::: {.notes}
-ECMWF - ERA5 reanalysis dataset. Sea surface temperatures.Most of the time to fit a regression model you need to invert a matrix and the dimension depends on how much data you have.17 trillion data points
+Disha Hegde and Marvin Pförtner are co-authors on affine tracing. Disha Hegde and Mohamed Adil are co-authors on calibrated computation-aware Gaussian processes.
 :::
 
 <!-- Keynote slide 3 -->
 ## Outline {#slide-03}
 
-1. GP Regression
+1. Linear systems and GP regression
 
 2. Probabilistic Numerics and Probabilistic Linear Solvers
 
@@ -148,7 +150,7 @@ Nonparametric regression, nonlinear, conjugacy, UQ
 
 
 ::: {.notes}
-Some work using iterative solvers.Structure in G - e.g. circulant methodsIterative methods - e.g. CGGP
+The methods that follow all approximate the solution of a linear system.
 :::
 
 <!-- Keynote slide 5 -->
@@ -156,16 +158,16 @@ Some work using iterative solvers.Structure in G - e.g. circulant methodsIterati
 
 - We focus on linear systems of the form
 
-$$Ax = b$$
+$$Ax=b, \qquad A\in\mathbb R^{d\times d}.$$
 
-- Standard solvers (LU, QR, Cholesky) require $\mathcal{O}(d^{3})$ compute to solve.
+- Dense direct factorisation (LU, QR or Cholesky when applicable) costs $\mathcal O(d^3)$.
 
-- Iterative Solvers produce a sequence $(x_{i}) \rightarrow x$.
+- An iterative solver produces approximations $x_0,x_1,\ldots$.
 
-- If the error $x_{i} - x$ can be made small for small enough $i$, they are more efficient
+- If a few inexpensive steps give the required accuracy, iteration can save work.
 
 ::: {.notes}
-Fast convergence = fast contraction.What we really care about is the error representation, the UQ. Much as with GPs, there is no point in using these methods unless they have this.
+The cost comparison depends on the number of iterations and the cost per step. We also want to quantify the error at the chosen stopping point.
 :::
 
 <!-- Keynote slide 6 -->
@@ -180,7 +182,7 @@ Fast convergence = fast contraction.What we really care about is the error repre
 - ...essentially any numerical pipeline.
 
 ::: {.notes}
-This works with any prior / iterative method.We have this commutative diagram but there are some gaps we need to fill.From this (generic) structure we don’t have a relationship between the point estimates and the measures
+For example, a Newton step solves a linear system involving the Hessian. The application we will follow today is Gaussian process regression.
 :::
 
 <!-- Keynote slide 7 -->
@@ -189,24 +191,24 @@ This works with any prior / iterative method.We have this commutative diagram bu
 ::: {.columns}
 :::: {.column width="40%"}
 
-![](assets/slide-07-1.png){.figure fig-alt="ERA5 temperature observations"}
+![](assets/slide-07-1.png){.figure fig-alt="ERA5 gridded temperature field"}
 
 ::::
 :::: {.column width="60%"}
 
-- $\approx$ 1 million observations per time point.
+- About one million grid values per hourly temperature field.
 
 - Hourly time points since 1940.
 
-- About $17 \times 10^{12}$ total data points.
+- Our experiment uses 36,450 training locations at one time point.
 
-- GP regression methods are $\mathcal{O}(d^{3})$!
+- Dense GP factorisation costs $\mathcal O(d^3)$ for $d$ training sites.
 
 ::::
 :::
 
 ::: {.notes}
-Gaussian prior and affine method.
+ERA5 provides gridded reanalysis fields. The later experiment uses 2-metre air temperature at one time point. The million-value scale refers to the global atmospheric grid at 0.25-degree spacing. [ERA5 dataset](https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels)
 :::
 
 <!-- Keynote slide 8 -->
@@ -260,7 +262,7 @@ Click to isolate the solve for the mean. The weights $v$ are shared across predi
 
 
 ::: {.notes}
-We might be worried about UQ from PIMs. Lots of reasons for Bayesian UQ to be good. With PIMs I just “did some stuff” and a distribution popped out. Why should this be any good?
+Use the GP example to show the prediction before and after conditioning on the data.
 :::
 
 <!-- Keynote slide 11 (skipped) -->
@@ -279,7 +281,7 @@ We might be worried about UQ from PIMs. Lots of reasons for Bayesian UQ to be go
 - Sparse / Inducing Points (FITC / Nystrom / Variational)
 
 ::: {.notes}
-To provide intuition: how would we check if Gaussian posteriors were “good”Assume access to truth - this is unrealistic in practise but necessary for a formal definitionWant truth to look like a sampleZ score.Doesn’t say anything based on one truthSample many truths, many z scores, hopefully N(0, I)
+Each of these approximations exploits structure to reduce the cost of GP inference.
 :::
 
 <!-- Keynote slide 12 (skipped) -->
@@ -287,9 +289,9 @@ To provide intuition: how would we check if Gaussian posteriors were “good”A
 
 - There are **few guarantees** on the UQ provided by these methods.
 
-- It can be *very* overconfident1.
+- It can be *very* overconfident [1].
 
-- This talk: Novel GP approximation methods based on applying a **probabilistic linear solver** to solver the linear system and **propagating the uncertainty** to the GP.
+- This talk: Novel GP approximation methods based on applying a **probabilistic linear solver** to solve the linear system and **propagating the uncertainty** to the GP.
 
 - We are able to obtain (subjective) guarantees on the UQ provided.
 
@@ -298,7 +300,7 @@ To provide intuition: how would we check if Gaussian posteriors were “good”A
 :::
 
 ::: {.notes}
-This is a special case of a more general notion of calibration, specialised to methods with Gaussian prior and posterior.Sometimes there are problems with rank(\Sigma), but these are solvable.
+The question is whether the reported uncertainty reflects the error introduced by the approximation.
 :::
 
 <!-- Keynote slide 13 -->
@@ -307,7 +309,7 @@ This is a special case of a more general notion of calibration, specialised to m
 
 
 ::: {.notes}
-This is a reasonable property - it being a fixed point essentially means we would be willing to use it as a linear solver.Banach Fixed Point Theorem might suggest we want the PLS to also be a contraction - but this is not required for calibration (we don’t need the posterior to converge, so long as the truth still looks like a realistic sample).In other words, it’s fine for the mean to shoot off to infinity as long as the covariance tells us it’s doing that.
+We now focus on the linear solve itself and the error left by early stopping.
 :::
 
 <!-- Keynote slide 14 -->
@@ -320,7 +322,7 @@ $$f:\mathcal{A} \rightarrow \mathcal{X}$$
 - For a problem $P \in \mathcal{A}$ with solution $x \in \mathcal{X}$, **good** numerical methods have $f(P) \approx x$.
 
 ::: {.notes}
-Turn the problem of choosing search directions into a problem of solving a linear system.
+The exact solution is usually unavailable. The numerical method returns an approximation in the solution space.
 :::
 
 <!-- Keynote slide 15 -->
@@ -328,12 +330,12 @@ Turn the problem of choosing search directions into a problem of solving a linea
 
 - Problem: find $x$ in $Ax = b$.
 
-- $\mathcal{X} = \mathbb{R}^{d}$, $\mathcal{P} = \left\{ (A,b):A \in \mathbb{R}^{d \times d},b \in \mathbb{R}^{d},A\text{invertible} \right\}$
+- $\mathcal{X} = \mathbb{R}^{d}$, $\mathcal{A} = \left\{ (A,b):A \in \mathbb{R}^{d \times d},b \in \mathbb{R}^{d},A\text{invertible} \right\}$
 
 - Measure **approximation error** through the error norm $\parallel f((A,b)) - x \parallel$
 
 ::: {.notes}
-Some work using iterative solvers.Structure in G - e.g. circulant methodsIterative methods - e.g. CGGP
+For a nonsingular matrix the pair of inputs determines a unique solution, so we can define the error of any approximation.
 :::
 
 <!-- Keynote slide 16 -->
@@ -346,13 +348,13 @@ Some work using iterative solvers.Structure in G - e.g. circulant methodsIterati
 
 - LU Factorisation:
 
-- Computes $x$ exactly (ignoring precision), $\mathcal{O}(d^{3})$.
+- Dense factorisation costs $\mathcal O(d^3)$, followed by two triangular solves.
 
 - Iterative Methods:
 
-- Richardson *(GD)*: $f((A,b);x_{i}) = x_{i} + (b - Ax_{i})$
+- Richardson iteration: $x_{i+1}=x_i+\omega(b-Ax_i)$.
 
-- Each application $\mathcal{O}(d^{2})$ *but converges rather slowly*.
+- Each dense step costs $\mathcal O(d^2)$. Convergence requires $\rho(I-\omega A)<1$ for all starting points.
 
 - Many others - e.g. Krylov methods *(CG)*, multigrid, semi-iterations...
 
@@ -365,7 +367,7 @@ Some work using iterative solvers.Structure in G - e.g. circulant methodsIterati
 :::
 
 ::: {.notes}
-A very special choice of prior that looks quite difficult to justify at this point.We will see how this posterior belief arises later.We see that the inverse disappears, and we are left with the downdate. So if we can compute these without G^{-1} it’s okay.
+In the animation $A$ is symmetric positive definite with eigenvalues 0.4 and 1.4. The unit Richardson step therefore converges here. For a general positive definite $A$, choose $0<\omega<2/\lambda_{\max}(A)$.
 :::
 
 <!-- Keynote slide 17 -->
@@ -393,7 +395,7 @@ A very special choice of prior that looks quite difficult to justify at this poi
 :::
 
 ::: {.notes}
-Subjective Bayesian setting - UQ is correct provided that the model is correctly specified. (i.e. prior and DGM is correct).This is assured by the GP being correctly specified.
+The residual is available at every step. Turning it into a sharp error estimate requires information about the matrix.
 :::
 
 <!-- Keynote slide 18 -->
@@ -423,7 +425,7 @@ Subjective Bayesian setting - UQ is correct provided that the model is correctly
 :::
 
 ::: {.notes}
-“Nice” essentially means the true solution is a fixed point of the linear system.Minimal requirement since, if we reach the true solution, we do not want to leave it.“Canonical form”
+The distribution should concentrate near the solution as the solver converges. At an earlier step we also care about whether its spread describes the remaining error.
 :::
 
 <!-- Keynote slide 19 -->
@@ -432,7 +434,7 @@ Subjective Bayesian setting - UQ is correct provided that the model is correctly
 
 
 ::: {.notes}
-Sketch how we build one of these solvers.Broad class that is Bayesian. Take these projections from earlier.Leading order in both m and d - cubic cost in m comes from matrix inversion.Use Krylov directions for S_m - BayesCG.
+We will construct a probabilistic solver by pushing a distribution through a classical iteration, then compare this with conditioning on linear observations.
 :::
 
 <!-- Keynote slide 20 -->
@@ -454,7 +456,7 @@ We will use a classical solver step to update a distribution over solutions.
 - We let $P^{i} = P_{i} \circ \ldots \circ P_{1}$, i.e. $x_{i} = P^{i}(x_{0})$.
 
 ::: {.notes}
-For CAGP-GS we have calibration guarantees, borne out empirically. But slow mean-field convergence.For CAGP-CG we lose calibration but fast mean-field convergence.Other methods could be faster?
+Each map advances one step. Their composition takes the initial guess to the current iterate.
 :::
 
 <!-- Keynote slide 22 -->
@@ -480,7 +482,7 @@ For CAGP-GS we have calibration guarantees, borne out empirically. But slow mean
 :::
 
 ::: {.notes}
-Step through this a bit carefully because it’s neatAdd this thing related to the covariance over v
+Apply the same deterministic iteration map to every draw from the preceding distribution. The law of the resulting draws is its pushforward.
 :::
 
 <!-- Keynote slide 23 -->
@@ -508,7 +510,7 @@ $$\mu_{i} = \mathcal{N}(x_{i},\Sigma_{i})\quad\Sigma_{i} = G_{i}\Sigma_{i - 1}G_
 :::
 
 ::: {.notes}
-Why would we do thisAdditional error on top of the mathematical UQ from the GP that represents reduced computational effort.
+The mean follows the ordinary iteration. The linear part of the map transports deviations from the mean, which gives the covariance update.
 :::
 
 <!-- Keynote slide 24 -->
@@ -516,48 +518,44 @@ Why would we do thisAdditional error on top of the mathematical UQ from the GP t
 
 - Phrase this as a **Bayesian inference problem**:
 
-- Take $x \sim \mu_{0}:= \mathcal{N}(x_{0},\Sigma_{0})$
+- Take $x\sim\mathcal N(x_0,\Sigma_0)$ with $\Sigma_0$ positive definite.
 
-- Condition on **data** of the form $s_{i}^{\top}Ax^{\star} = s_{i}^{\top}b$, $i = 1,\ldots,m$, where $S_{m} = \lbrack s_{1},\ldots,s_{m}\rbrack \in \mathbb{R}^{d \times m}$ has rank $m$.
+- Condition on **data** of the form $s_{i}^{\top}Ax^{\star} = s_{i}^{\top}b$, $i = 1,\ldots,m$, where the fixed matrix $S_{m} = \lbrack s_{1},\ldots,s_{m}\rbrack \in \mathbb{R}^{d \times m}$ has rank $m$.
 
 ::: {.notes}
-Operates on multiple approximations of the matrix, usually based on different meshings of the domain (grids) in PDEsNot important to understand exactly what is happening here. The issue is that because we pass through multiple subroutines, these all need to be augmented and the cross covariances between intermediate quantities need to be tracked, to get our posterior belief.
+Each search direction supplies one exact scalar observation of the unknown solution. Stacking them gives the observation matrix on the next slide.
 :::
 
 <!-- Keynote slide 25 -->
 ## Bayesian PLS {#slide-25 .compact}
 
-- Posterior:
+Write $H=S_m^\top A$ and $C=H\Sigma_0 H^\top$. Conditioning on $Hx=S_m^\top b$ gives
 
 $$\begin{aligned}
-x \mid S_{m}^{\top}b &\sim \mu_{m} = \mathcal{N}(x_{m},\Sigma_{m}) \\
-x_{m} &= x_{0} + S_{m}(S_{m}^{\top}A\Sigma_{0}A^{\top}S_{m})^{- 1}S_{m}^{\top}b \\
-\Sigma_{m} &= \Sigma_{0} - S_{m}(S_{m}^{\top}A\Sigma_{0}A^{\top}S_{m})^{- 1}S_{m}^{\top}
+x\mid Hx=S_m^\top b &\sim \mathcal N(x_m,\Sigma_m),\\
+x_m &= x_0+\Sigma_0 H^\top C^{-1}S_m^\top(b-Ax_0),\\
+\Sigma_m &= \Sigma_0-\Sigma_0 H^\top C^{-1}H\Sigma_0.
 \end{aligned}$$
 
-- The matrix inside the inverse is $m \times m$.
-
-- Cost: $\mathcal{O}(m^{3} + md^{2})$ compute.
-
-- (Methods exist to reduce this cost)
+The dense update costs $\mathcal O(md^2+m^3)$ and factors an $m\times m$ matrix $C$.
 
 ::: {.notes}
-Green line - SOA mean convergence, poor UQ.
+The projected residual updates the prior mean. In exact arithmetic the resulting distribution is supported on the affine space of solutions of the observed constraints.
 :::
 
 <!-- Keynote slide 26 -->
 ## Bayesian Methods are Pushforward Methods {#slide-26 .compact}
 
-- Previous work gives the impression that these are **separate methodological approaches**.
-
 ::: {.theorem}
-**Theorem (Coming Soon)**
+**[Theorem 3.1](https://arxiv.org/html/2605.10566v2)**
 
-Let $(P_{i})$ be a sequence of affine iterative methods with fixed point $x^{\star}$. Then the PIM associated with $P^{i}$ is a Gaussian-affine **Bayesian** PLS with information $S_{i}$ if and only if $P_{i}$ orthogonally projects onto $\ker(\Sigma_{0}AS_{i})$ with-respect-to the $\Sigma_{0}^{- 1}$ inner-product.
+A Bayesian linear solver with Gaussian iterates can be represented by a sequence of affine iteration maps.
+
+Conversely, suppose the affine iteration fixes $x^\star$. If the linear part $G_i\cdots G_1$ of the composed map is the $\Sigma_0^{-1}$-orthogonal projection onto $\ker(S_i^\top A)$, its pushforward gives the Bayesian posterior for those directions.
 :::
 
 ::: {.notes}
-Issue comes from the fact that the algorithm is broken down into subroutines.If we could extract these matrices we would be okay - but they are usually implicit.
+The projection describes the whole sequence through step $i$. Its range consists of perturbations invisible to all the observations so far.
 :::
 
 <!-- Keynote slide 27 -->
@@ -592,7 +590,7 @@ $$z_{i} = (\Sigma_{m}^{i})^{- \frac{1}{2}}(x_{m}^{i} - x^{\star ,i})$$
 :::
 
 ::: {.fragment .calibration-build data-fragment-index="1"}
-$\mu_{0}$ the prior: an ensemble of problems we wish to test calibratedness wrt.
+Draw each true solution from the prior $\mu_0$.
 :::
 
 ::: {.fragment .calibration-build data-fragment-index="2"}
@@ -606,7 +604,7 @@ z_{i} &\sim N(0,I)
 :::
 
 ::: {.notes}
-Each build adds a draw from the prior and the posterior for that problem. Compare the errors after standardising by the reported posterior covariances.
+Fix the stopping iteration and repeat over draws of the true solution. This illustration uses nonsingular reported covariances. Compare the errors after standardising by the reported posterior covariances.
 :::
 
 <!-- Keynote slide 29 -->
@@ -673,7 +671,7 @@ m(x) &= m_{0}(x) + k_{0}(x,X_{\text{tr}})A^{- 1}(y - m_{0}(X_{\text{tr}})) \\
 k(x,x') &= k_{0}(x,x') - k_{0}(x,X_{\text{tr}})A^{- 1}k_{0}(X_{\text{tr}},x')
 \end{aligned}$$
 
-- Standard solvers incur $\mathcal{O}(d^{3})$ computation.
+- Dense Cholesky factorisation costs $\mathcal O(d^3)$.
 
 - Goal: fast, calibrated GP posteriors.
 
@@ -717,7 +715,7 @@ For this example we start the solver weights from $\mathcal{N}(0,A^{-1})$. Writi
 ::: {.theorem}
 **Theorem (Theorem 4 of \[1\])**
 
-Assume that the GP model is strongly calibrated (in the sense of \[2\]) for $(\mu_{0},\text{DGM})$, and that the PLS is strongly calibrated for $N(0,A^{- 1})$ (plus some additional mild technical conditions).
+Write DGM for the data-generating model. Assume that the GP model is strongly calibrated (in the sense of \[2\]) for $(\mu_{0},\text{DGM})$, and that the PLS is strongly calibrated for $N(0,A^{- 1})$ (plus some additional mild technical conditions).
 
 Then the CAGP posterior is strongly calibrated for $(\mu_{0},\text{DGM})$.
 :::
@@ -761,15 +759,11 @@ Where does $\overline{M}_i$ appear in the solver code we already have?
 <!-- Keynote slide 39 (skipped) -->
 ## Using the Inverse Prior {#slide-39 visibility="hidden"}
 
-- We build these posteriors using the **inverse prior** $\mu_{0} = \mathcal{N}(0,G^{- 1})$
+For symmetric positive definite $A$, take the inverse prior $\mathcal N(0,A^{-1})$.
 
-- For all "nice" iterative methods the posterior has the form $\mathcal{N}(\overline{v},G^{- 1} - D)$.
+For the fixed-point affine iteration, $G_i=I-M_i A$. The propagated covariance has the form $A^{-1}-D_i$.
 
-- (This is because all such PLSs can be expressed as $M = (I - \tilde{M}A)$ for some $\tilde{M}$.)
-
-- $\overline{v}$ and $D$ are (provably) independent of $G^{- 1}$.
-
-- However some challenges remain...
+The traces give operator actions for computing the mean and projected downdate without forming $A^{-1}$.
 
 <!-- Keynote slide 40 (skipped) -->
 ## 3.1 PLSs with Inverse Priors {#slide-40 .section-slide visibility="hidden"}
@@ -783,24 +777,24 @@ Where does $\overline{M}_i$ appear in the solver code we already have?
 
 - We often target low dimensional summary statistics of the posterior, i.e.
 
-$$V^{\top}X_{m} \sim \mathcal{N}(V^{\top}X,V^{\top}(A^{- 1} - D_{m})V)$$
+$$V^{\top}X_{m} \sim \mathcal{N}(V^{\top}x_m,V^{\top}(A^{- 1} - D_{m})V)$$
 
 $V^{\top}D_{m}V$ often computable at $\mathcal{O}(rank(V)d^{2})$
 
 <!-- Keynote slide 42 (skipped) -->
 ## With Bayesian PLSs {#slide-42 .compact visibility="hidden"}
 
-- Example: $v \sim \mathcal{N}(0,G^{- 1})$, data $S_{m}^{\top}Gv = S_{m}^{\top}b = :S_{m}^{\top}(y - m_{0}(X_{tr}))$.
+- Example: $v \sim \mathcal{N}(0,A^{-1})$, data $S_{m}^{\top}Av = S_{m}^{\top}b = S_{m}^{\top}(y - m_{0}(X_{tr}))$.
 
 - Posterior:
 
 $$\begin{aligned}
-v \mid S_{m}^{\top}b &\sim \nu_{m} = \mathcal{N}({\overline{v}}_{m},G^{- 1} - D_{m}) \\
-v_{m} &= v_{0} + S_{m}(S_{m}^{\top}GS_{m})^{- 1}S_{m}^{\top}b \\
-D_{m} &= S_{m}(S_{m}^{\top}GS_{m})^{- 1}S_{m}^{\top}
+v \mid S_{m}^{\top}b &\sim \nu_{m} = \mathcal{N}({\overline{v}}_{m},A^{-1} - D_{m}) \\
+\overline{v}_{m} &= S_{m}(S_{m}^{\top}AS_{m})^{- 1}S_{m}^{\top}b \\
+D_{m} &= S_{m}(S_{m}^{\top}AS_{m})^{- 1}S_{m}^{\top}
 \end{aligned}$$
 
-- We can compute ${\overline{v}}_{m}$ and $D_{m}$ **without** access to $G^{- 1}$.
+- We can compute ${\overline{v}}_{m}$ and $D_{m}$ **without** access to $A^{-1}$.
 
 <!-- Keynote slide 43 (skipped) -->
 ## Challenge 1: Implementation {#slide-43 visibility="hidden"}
@@ -827,17 +821,17 @@ D_{m} &= S_{m}(S_{m}^{\top}GS_{m})^{- 1}S_{m}^{\top}
 
 ### Details
 
-If $v \sim \nu:= \mathcal{N}(\overline{v},G^{- 1} - D)$ then we can **marginalise** $v$:
+If $v \sim \nu:= \mathcal{N}(\overline{v},A^{-1} - D)$ then we can **marginalise** $v$:
 
-$$\tilde{\mu} = \int\mu^{y}(v)\nu(dv) \sim \mathcal{N}(\tilde{m},\tilde{C})$$
+$$\tilde{\mu} = \int\mu^{y}(v)\nu(dv) = \mathcal{GP}(\tilde{m},\tilde{k})$$
 
-$$\tilde{m}(x) = m_{0}(x) + k(x,X_{\text{tr}})\overline{v}$$
+$$\tilde{m}(x) = m_{0}(x) + k_0(x,X_{\text{tr}})\overline{v}$$
 
-$$\tilde{k}(x,x') = k(x,x') + k_{0}(x,X_{\text{tr}})(G^{- 1} - D)k_{0}(X_{\text{tr}},x')$$
+$$\tilde{k}(x,x') = k(x,x') + k_{0}(x,X_{\text{tr}})(A^{-1} - D)k_{0}(X_{\text{tr}},x')$$
 
-$$= k_{0}(x,x') - k_{0}(x,X_{\text{tr}})G^{- 1}k_{0}(X_{\text{tr}},x') + k_{0}(x,X_{\text{tr}})G^{- 1}k_{0}(X_{\text{tr}},x') - k_{0}(x,X_{\text{tr}})Dk_{0}(X_{\text{tr}},x')$$
+$$= k_{0}(x,x') - k_{0}(x,X_{\text{tr}})A^{-1}k_{0}(X_{\text{tr}},x') + k_{0}(x,X_{\text{tr}})A^{-1}k_{0}(X_{\text{tr}},x') - k_{0}(x,X_{\text{tr}})Dk_{0}(X_{\text{tr}},x')$$
 
-$$= k(x,x') - k(x,X_{\text{tr}})Dk(X_{\text{tr}},x')$$
+$$= k_0(x,x') - k_0(x,X_{\text{tr}})Dk_0(X_{\text{tr}},x')$$
 
 <!-- Keynote slide 48 (skipped) -->
 ## "Computational Uncertainty" {#slide-48 visibility="hidden"}
@@ -1037,7 +1031,7 @@ We ran the same twenty two-grid multigrid cycles both ways. Tracing the iterate 
 
 - Synthetic test problem.
 
-- Draw a sample from a GP prior (Matern 3/2)
+- Draw a sample from a GP prior (Matérn 3/2)
 
 - 100x100 grid of training points in $\lbrack 0,1\rbrack^{2}$
 
