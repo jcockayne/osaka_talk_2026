@@ -920,7 +920,7 @@ Disha Hegde, PhD thesis, §3.10.1.2.
 :::
 
 ::: {.notes}
-Both traces follow the same solver routine. For a fixed sequence of steps whose coefficients are independent of the inputs, tracing the composed routine in $b$ would give the accumulated $\overline{M}_i$ from the inverse-prior slide. We will use the individual steps so we can update the downdate as we iterate.
+We hold $A$ and the step coefficients fixed as we vary $x$ or $b$. The step is affine in those inputs, so the changes we trace are exact. Tracing the composed routine in $b$ would give the accumulated $\overline{M}_i$ from the inverse-prior slide. We will use the individual steps so we can update the downdate as we iterate.
 :::
 
 <!-- Keynote slide 54 -->
@@ -957,6 +957,8 @@ $$\begin{aligned}
 
 ::: {.notes}
 The triangular solve applies $L^{-1}$ to the change in its input. This same $G$ propagates uncertainty through one step as $G\Sigma G^\top$.
+
+We run the same solver code twice, first with a symbolic iterate and then with a symbolic right-hand side. Each run records the operations on that input, giving us code that applies $G$ or $M$.
 :::
 
 <!-- Keynote slide 55 -->
