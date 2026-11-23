@@ -22,8 +22,8 @@ _quarto.yml defines the project and limits rendering to talk.qmd.
 Controls: arrow keys to navigate, F for fullscreen, O for overview,
 S for speaker view.
 
-The source contains 65 slides, including two paper-link slides.
-Thirteen slides have visibility="hidden", so the default presentation has 52 slides.
+The source contains 69 slides, including two paper-link slides.
+Thirteen slides have visibility="hidden", so the default presentation has 56 slides.
 Remove that attribute on a slide heading to show a skipped slide.
 The slide IDs preserve the original Keynote slide numbers.
 
@@ -32,13 +32,16 @@ Some of the inherited speaker notes refer to other slides.
 Text, equations, and Python code are editable. Complex diagrams are preserved
 as SVG graphics; plots and article excerpts use the original image assets.
 The multigrid example remains pseudocode and is not executed.
-The calibration figure on displayed slide 26 reproduces the original three
+The calibration figure on displayed slide 30 reproduces the original three
 click-driven builds with one-second fades and automatic sequencing. The
 right-hand statistics appear alongside the corresponding figure builds;
 figure labels are enlarged for readability.
-Displayed slides 9, 21, 33, 35, 41 and 44 each have a single click-driven
+Displayed slides 13, 25, 37, 39, 45 and 48 each have a single click-driven
 reveal. Transitions between slides are instant.
-To regenerate the affine iteration animation on displayed slide 14, run
+The opening movie on slide 3 stops after two Gauss–Seidel steps. Advance once
+to reveal the exact solution. Regenerate the movie and matching still with
+`python3 scripts/plot_stopped_solve.py` (NumPy, Matplotlib, LaTeX with dvipng, and FFmpeg).
+To regenerate the three-method animation on displayed slide 18, run
 `python3 scripts/plot_affine_iterations.py` with NumPy, Matplotlib and Pillow
 installed, then render the talk.
 

@@ -47,12 +47,56 @@ A New Paradigm for Implementing Probabilistic Linear Solvers
 
 ::: {.author-block}
 **Jon Cockayne**<br>
-Osaka University, 26 November 2026
+University of Osaka, 26 November 2026
 :::
 
 ::: {.notes}
 Iterations of IPMs require solutions of large linear systems.Second order optimisation - Newton type methods involve the inverse Hessian at each iteration.
 :::
+
+## Gauss–Seidel for a large linear system {#gauss-seidel-setup}
+
+$$Ax^\star=b, \qquad A=L+U$$
+
+$$Lx_{k+1}=b-Ux_k$$
+
+::: {.notes}
+We start from an initial guess $x_0$. Here $L$ is the lower triangular part of $A$, including its nonzero diagonal, and $U$ is strictly upper triangular. Given $x_k$, forward substitution gives the next iterate. I'll show two steps on a two-dimensional example so we can see the path.
+:::
+
+## Two steps of Gauss–Seidel {#stopped-solve .no-heading}
+
+```{=html}
+<div class="stopped-solve-frame">
+  <video class="stopped-solve-plot" src="assets/stopped-solve.mp4" muted playsinline data-autoplay
+         aria-label="Gauss–Seidel moves from the origin to x₁ and then to x₂, where the solver stops."></video>
+</div>
+```
+
+::: {.notes}
+Let the two steps play. We stop solving $Ax=b$ at $x_2$. How far, and in which direction, could the solution still be?
+
+Pause here. We know the iterates and can compute the residual. What we would like to describe is the remaining error in the solution.
+:::
+
+## The remaining error {#stopped-solve-reveal .no-heading}
+
+```{=html}
+<div class="stopped-solve-frame">
+  <img class="stopped-solve-plot" src="assets/stopped-solve-reveal.png" alt="The same two steps, with an arrow pointing up and left from x₂ to the exact solution at (2, 1).">
+</div>
+```
+
+::: {.notes}
+The arrow is the correction $x^\star-x_2$. Here we know the solution because we constructed the example. In a large system, computing the exact correction would finish the solve.
+
+Can the solver describe the error when we stop early? We will use the solver code to propagate a distribution that describes the remaining error.
+:::
+
+## Goal {#goal}
+
+- Represent solver error *probabilistically* and *automatically*.
+- Propagate it into probabilistic regression methods.
 
 ## Papers {#papers-opening}
 

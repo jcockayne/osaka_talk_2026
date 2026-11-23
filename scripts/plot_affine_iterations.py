@@ -1,4 +1,4 @@
-"""Regenerate the animated plot on displayed slide 14 (source slide-16)."""
+"""Regenerate the animated plot on the three-method comparison slide (source slide-16)."""
 
 from pathlib import Path
 

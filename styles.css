@@ -80,3 +80,17 @@
     transition: none !important;
   }
 }
+
+/* Keep the two plot-only slides registered when the correction is revealed. */
+.reveal .stopped-solve-frame {
+  height: 830px;
+  display: grid;
+  place-items: center;
+}
+.reveal .stopped-solve-plot {
+  display: block;
+  width: 1200px;
+  max-width: 100%;
+  height: auto;
+  margin: 0;
+}
