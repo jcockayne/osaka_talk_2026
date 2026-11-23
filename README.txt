@@ -22,14 +22,12 @@ _quarto.yml defines the project and limits rendering to talk.qmd.
 Controls: arrow keys to navigate, F for fullscreen, O for overview,
 S for speaker view.
 
-The source contains all 68 Keynote slides and two added paper-link slides.
-The original 16 skipped slides retain visibility="hidden", so the default
-presentation has 54 slides.
+The source contains 65 slides, including two paper-link slides.
+Thirteen slides have visibility="hidden", so the default presentation has 52 slides.
 Remove that attribute on a slide heading to show a skipped slide.
 The slide IDs preserve the original Keynote slide numbers.
 
-Original speaker notes are retained as supplied, including their original
-slide associations. Some notes appear to refer to other slides.
+Some of the inherited speaker notes refer to other slides.
 
 Text, equations, and Python code are editable. Complex diagrams are preserved
 as SVG graphics; plots and article excerpts use the original image assets.

@@ -90,7 +90,7 @@ ECMWF - ERA5 reanalysis dataset. Sea surface temperatures.Most of the time to fi
 
 3. Computation-Aware GPs
 
-4. Affine Tracing
+4. Tracing the iterate and the right-hand side
 
 5. Results
 
@@ -392,7 +392,7 @@ Sketch how we build one of these solvers.Broad class that is Bayesian. Take thes
 ![](assets/slide-20-1.png){.paper fig-alt="Probabilistic Iterative Methods for Linear Systems, article title page"}
 
 ::: {.notes}
-However - it is quite complicated (and PLS-specific) to compute them.We also need separate implementations under the inverse prior and general priors, to do manual cancellations.
+We will use a classical solver step to update a distribution over solutions.
 :::
 
 <!-- Keynote slide 21 -->
@@ -442,11 +442,11 @@ Step through this a bit carefully because it’s neatAdd this thing related to t
 
 - Many iterative methods are affine:
 
-$$P_{i}(x) = M_{i}x + f_{i}\quad M_{i} \in \mathbb{R}^{d \times d},f_{i} \in \mathbb{R}^{d}$$
+$$P_{i}(x) = G_{i}x + f_{i}\quad G_{i} \in \mathbb{R}^{d \times d},f_{i} \in \mathbb{R}^{d}$$
 
 - Using a Gaussian prior $\mu_{0} = \mathcal{N}(x_{0},\Sigma_{0})$ we have
 
-$$\mu_{i} = \mathcal{N}(x_{i},\Sigma_{i})\quad\Sigma_{i} = M_{i}\Sigma_{i - 1}M_{i}^{\top}$$
+$$\mu_{i} = \mathcal{N}(x_{i},\Sigma_{i})\quad\Sigma_{i} = G_{i}\Sigma_{i - 1}G_{i}^{\top}$$
 
 ::::
 :::: {.column width="32%"}
@@ -515,7 +515,7 @@ Issue comes from the fact that the algorithm is broken down into subroutines.If 
 
 
 ::: {.notes}
-This is what an implementation might look likeInstead of passing in a vector we pass in an object that “behaves like” a vector.Records all the affine operations performed on it and represents them in a Graph structure.Green = multiply, orange = shift
+Does the uncertainty reported by a probabilistic linear solver agree with the errors it makes?
 :::
 
 <!-- Keynote slide 28 -->
@@ -555,7 +555,7 @@ z_{i} &\sim N(0,I)
 :::
 
 ::: {.notes}
-We can then manipulate the graph structure - apply it to iterate meanOr delete shifts and apply it to get covariance iterations.Notably - this forms a new graph that can be simplified.
+Each build adds a draw from the prior and the posterior for that problem. Compare the errors after standardising by the reported posterior covariances.
 :::
 
 <!-- Keynote slide 29 -->
@@ -575,7 +575,7 @@ N^{\top}(x_{i}-x^{\star}) &= 0.
 :::
 
 ::: {.notes}
-We can then manipulate the graph structure - apply it to iterate meanOr delete shifts and apply it to get covariance iterations.Notably - this forms a new graph that can be simplified.
+Test the standardised error on the range of the covariance. In directions with zero posterior variance, calibration requires zero error.
 :::
 
 <!-- Keynote slide 30 -->
@@ -590,7 +590,7 @@ Then the associated PIM $\mu_{i}=(P^{i})_{\sharp}\mu_{0}$ is **strongly calibrat
 :::
 
 ::: {.notes}
-Challenge: working with inverse priors is still hard.Express in canonical form.Gain a new (equivalent) graph.
+The fixed point property makes the error follow the same linear map as the prior uncertainty. This explains why calibration can hold at an early stopping iteration.
 :::
 
 <!-- Keynote slide 31 -->
@@ -599,7 +599,7 @@ Challenge: working with inverse priors is still hard.Express in canonical form.G
 
 
 ::: {.notes}
-Notice there is again some simplification. Simplify the graph and we get out the downrate form.
+We now use a calibrated solver for the linear system inside GP regression.
 :::
 
 <!-- Keynote slide 32 -->
@@ -610,7 +610,7 @@ Notice there is again some simplification. Simplify the graph and we get out the
 ![](assets/slide-32-2.png){.paper-half fig-alt="Paper on computation-aware Gaussian processes"}
 
 ::: {.notes}
-Automating this is hard. E-graphs provide a solution - essentially define equivalence rules, like distributivity, A * A^{-1} = I. Attach costs to each operation, make A^{-1} very expensive, and then simplify.Could even give us a way to automatically derive canonical form!What we want to do is structured, so maybe there is an easier way.Cost specific - also simplify low-dimensional projections, multigrid.“More complex” - apply this to other problems than linear systems?
+Stopping the solve early leaves uncertainty in the GP prediction. Marginalising over the solver output carries that uncertainty into the predictive covariance.
 :::
 
 <!-- Keynote slide 33 -->
@@ -696,11 +696,11 @@ where the downdate $D_{i}$ can be expressed in terms of $A$ and $\overline{M}_{i
 <!-- Keynote slide 38 -->
 ## ...but how do we get the downdate? {#slide-38}
 
-- Straightforward to show:
+After $i$ steps the coefficient of $b$ is $\overline{M}_i$. It determines the downdate
 
 $$D_{i} = {\overline{M}}_{i} + {\overline{M}}_{i}^{\top} - {\overline{M}}_{i}A{\overline{M}}_{i}^{\top}$$
 
-- But ${\overline{M}}_{i}$ is **only available implicitly** - it needs to be computed on paper **for every new PIM** and for **every iteration number.**
+Where does $\overline{M}_i$ appear in the solver code we already have?
 
 <!-- Keynote slide 39 (skipped) -->
 ## Using the Inverse Prior {#slide-39 visibility="hidden"}
@@ -799,12 +799,12 @@ Jonathan Wenger, Geoff Pleiss, Marvin Pfortner, Philipp Hennig, & John P. Cunnin
 :::
 
 <!-- Keynote slide 49 -->
-## Part 4: Affine Tracing {#slide-49 .section-slide}
+## Part 4: Automating PLS Implementation {#slide-49 .section-slide}
 
 
 
 <!-- Keynote slide 50 -->
-## More Complex Routines {#slide-50}
+## One multigrid cycle {#slide-50}
 
 ::: {.columns}
 :::: {.column width="62%"}
@@ -823,18 +823,18 @@ def multigrid(x_l, b_l):
 ::::
 :::: {.column width="38%"}
 
-To lift this we need to track **cross-covariances**...
+The smoothed iterate and the coarse-grid correction both depend on the same input $x_\ell$.
 
 ::::
 :::
 
 <!-- Keynote slide 51 -->
-## More Complex Routines {#slide-51}
+## Propagating uncertainty through multigrid by hand {#slide-51}
 
 ::: {.columns}
 :::: {.column width="35%"}
 
-...this is what it looks like algebraically.
+Adding the correction to the smoothed iterate requires their cross-covariance.
 
 ::::
 :::: {.column width="65%"}
@@ -845,120 +845,113 @@ To lift this we need to track **cross-covariances**...
 :::
 
 <!-- Keynote slide 52 -->
-## ...but it might be faster! {#slide-52}
+## How quickly does the mean converge? {#slide-52}
 
 ![](assets/slide-52-1.png){.wide-figure fig-alt="Mean error convergence of multigrid, Gauss-Seidel, and conjugate gradients"}
 
 <!-- Keynote slide 53 -->
-## An Algorithmic Approach {#slide-53}
+## Trace the solver twice {#slide-53}
 
-- Any (first order) affine iterative method has the form
+Fix $A$. One affine step with fixed point $A^{-1}b$ has the form
 
-$$x_{n + 1} = M_{n + 1}x_{n} + f_{n + 1}$$
+$$\phi_i(x,b)=G_i x+M_i b, \qquad G_i=I-M_i A.$$
 
-- for some $M_{n + 1}$, $f_{n + 1}$.
+- Trace the **iterate** $x$ with $b$ fixed to get the action of $G_i$.
+- Trace the **right-hand side** $b$ with $x$ fixed to get the action of $M_i$.
 
-- E.g. Gauss-Seidel: $x_{n + 1} = L^{- 1}(b - Ux) = L^{- 1}b - L^{- 1}Ux$.
+Disha Hegde, PhD thesis, §3.10.1.2.
 
-- Can we extract them automatically?
+::: {.notes}
+Both traces follow the same solver routine. For a fixed sequence of steps whose coefficients are independent of the inputs, tracing the composed routine in $b$ would give the accumulated $\overline{M}_i$ from the inverse-prior slide. We will use the individual steps so we can update the downdate as we iterate.
+:::
 
 <!-- Keynote slide 54 -->
-## From Code to PLS {#slide-54 .compact}
+## Trace the iterate in Gauss–Seidel {#slide-54 .compact}
 
 ::: {.columns}
-:::: {.column width="48%"}
+:::: {.column width="58%"}
 
-$$x_{n + 1} = L^{- 1}(b - Ux_{n})$$
-
-`x: AffineTracer`
-
-![](assets/slide-54-diagram.svg){.diagram fig-alt="Traced Gauss-Seidel operations: multiply by U, negate, add b, and solve with L"}
-
-::::
-:::: {.column width="52%"}
-
-```{.python}
-import numpy as np
-import scipy.linalg as spl
+```{.python code-line-numbers="7-9"}
+from numpy import tril, triu
+from scipy.linalg import solve_triangular
 
 def gauss_seidel(A, b, x):
-    L = np.tril(A)
-    U = np.triu(A, k=1)
+    L = tril(A)
+    U = triu(A, k=1)
     y = U @ x
     z = b - y
-    return spl.solve_triangular(L, z)
+    return solve_triangular(L, z, lower=True)
 ```
+
+::::
+:::: {.column width="42%"}
+
+Hold $b$ fixed and change $x$ by $h$.
+
+$$\begin{aligned}
+\Delta y &= Uh \\
+\Delta z &= -Uh \\
+\Delta x_{\rm next} &= -L^{-1}Uh = G h .
+\end{aligned}$$
 
 ::::
 :::
 
-<!-- Keynote slide 55 -->
-## Program Transformation {#slide-55}
+::: {.notes}
+The triangular solve applies $L^{-1}$ to the change in its input. This same $G$ propagates uncertainty through one step as $G\Sigma G^\top$.
+:::
 
-![](assets/slide-55-diagram.svg){.wide-diagram fig-alt="Affine program and the linear program obtained by removing the shift"}
+<!-- Keynote slide 55 -->
+## Trace the right-hand side in Gauss–Seidel {#slide-55 .compact}
+
+::: {.columns}
+:::: {.column width="58%"}
+
+```{.python code-line-numbers="8-9"}
+from numpy import tril, triu
+from scipy.linalg import solve_triangular
+
+def gauss_seidel(A, b, x):
+    L = tril(A)
+    U = triu(A, k=1)
+    y = U @ x
+    z = b - y
+    return solve_triangular(L, z, lower=True)
+```
+
+::::
+:::: {.column width="42%"}
+
+Hold $x$ fixed and change $b$ by $q$.
+
+$$\begin{aligned}
+\Delta y &= 0 \\
+\Delta z &= q \\
+\Delta x_{\rm next} &= L^{-1}q = M q .
+\end{aligned}$$
+
+::::
+:::
+
+::: {.notes}
+The change enters one line later. The triangular solve now acts directly on $q$, so $M=L^{-1}$. For multigrid the same procedure follows the change in $b$ through smoothing, restriction, the coarse solve and interpolation.
+:::
 
 <!-- Keynote slide 56 -->
-## Inverse Priors {#slide-56 .compact}
+## Trace to Downdate {#slide-56 .compact}
 
-- This shows how we can use Affine Tracing to generate an implementation of $P^{i}$ and its linear part ${\overline{G}}_{i} = \prod_{j=i}^{1}G_{j}$.
+For the inverse prior $\Sigma_0=A^{-1}$, start with $D_0=0$. Each step gives
 
-- We have seen that $G_{i} = (I - M_{i}A)$. We have:
+$$D_i =
+\underbrace{G_i D_{i-1} G_i^\top}_{\text{propagate with the }x\text{-trace}}
++ \underbrace{M_i+M_i^\top-M_i A M_i^\top}_{\text{update with the }b\text{-trace}}.$$
 
-$$D_{i} = S(M_{i}) + \sum_{j=1}^{i-1}G_{i:j + 1}S(M_{j})G_{i:j + 1}^{\top}$$
+At test points $X_*$, set $V=k_0(X_*,X_{\rm tr})$. The predictive covariance is
 
-- We need an implementation of $M_{i}$ to compute the downdate.
+$$\tilde{k}_i(X_*,X_*)=k_0(X_*,X_*)-V D_i V^\top.$$
 
-- For this we use a (more sophisticated) program transformation.
-
-$$G_{i:j} = \prod_{k=i}^{j}G_{j}$$
-
-<!-- Keynote slide 57 -->
-## Program Transformation {#slide-57 .compact}
-
-- We need to compute expressions like $VM_{i} = VG_{i}A^{- 1} - VA^{- 1}$, $V \in \mathbb{R}^{d' \times d}$
-
-- Feed this expression into an **e-graph** *(generated from the traced graph)*.
-
-- Represent linear algebra identities as equivalences in the e-graph.
-
-- Generates equivalent representations and extracts the **minimum cost** representation.
-
-<!-- Keynote slide 58 -->
-## E-Graph Simplification {#slide-58}
-
-![](assets/slide-58-diagram.svg){.wide-diagram fig-alt="E-graph simplification from the traced inverse expression to minus V times L inverse"}
-
-<!-- Keynote slide 59 (skipped) -->
-## More Complex Transformations {#slide-59 visibility="hidden"}
-
-$$x_{n + 1} = L^{- 1}(b - Ux_{n}) = (I - L^{- 1}A)x_{n} + L^{- 1}b$$
-
-Canonical form
-
-![](assets/slide-59-diagram.svg){.wide-diagram fig-alt="Canonical form of the affine map and its action on the inverse prior"}
-
-<!-- Keynote slide 60 (skipped) -->
-## Automatic Inverse Priors {#slide-60 visibility="hidden"}
-
-![](assets/slide-60-diagram.svg){.wide-diagram fig-alt="Equivalent computation graphs for the inverse prior and its downdate"}
-
-<!-- Keynote slide 61 (skipped) -->
-## Practical Algorithms {#slide-61 visibility="hidden"}
-
-- Various tools for graph simplification.
-
-- E-graphs1
-
-- Bespoke algorithms?
-
-- Further optimisations possible.
-
-- e.g. cost-specific (for low-dimensional projections).
-
-- More complex applications.
-
-::: {.references}
-1\. Willsey, M., Chandrakana Nandi, Yisu Remy Wang, Flatt, O., Panchekha, P., & Tatlock, Z. (2020). Artifact for "Fast and Extensible Equality Saturation." Zenodo. https://doi.org/10.5281/ZENODO.4072013
+::: {.notes}
+Substitute $\Sigma_{i-1}=A^{-1}-D_{i-1}$ into $\Sigma_i=G_i\Sigma_{i-1}G_i^\top$ and use $G_i=I-M_iA$ with symmetric positive definite $A$. For the projection, the transpose traces give $Z=VG_i$ and $W=VM_i$. The two terms become $ZD_{i-1}Z^\top$ and $WV^\top+VW^\top-WAW^\top$. This uses operator actions throughout and never forms $G_i$, $M_i$ or $A^{-1}$. For a stationary step, the same two traces can be reused at every iteration (Hegde, Algorithm 10).
 :::
 
 <!-- Keynote slide 62 -->
@@ -967,9 +960,9 @@ Canonical form
 
 
 <!-- Keynote slide 63 -->
-## AT Implementations can be Faster {#slide-63}
+## Faster Implementation {#slide-63}
 
-- Comparing traced 2-grid multigrid to a hand-implementation.
+Twenty multigrid cycles from $\mathcal{N}(0,I)$. The $x$-trace propagates the covariance through each cycle.
 
 ![](assets/slide-63-1.png){.result-figure fig-alt="Wall-time comparison of ProbNum and AffineTracer for two-grid multigrid"}
 
@@ -982,30 +975,37 @@ Canonical form
 
 - 100x100 grid of training points in $\lbrack 0,1\rbrack^{2}$
 
-- Multigrid uses 40x40 and 30x30 grids
+- Both multigrid solvers use a $30 \times 30$ coarse grid. The three-grid solver adds a $40 \times 40$ intermediate grid.
 
 - 5x5 grid as test set
 
 <!-- Keynote slide 65 -->
-## CAGP Convergence {#slide-65}
+## Convergence Results {#slide-65 .compact}
 
-![](assets/slide-65-1.png){.wide-figure fig-alt="CAGP convergence: RMSE and calibration versus wall time"}
+![](assets/cagp-multigrid-two-traces.png){.wide-figure fig-alt="RMSE and negative log likelihood against wall time. The two-trace two-grid and three-grid runs are labelled AFT."}
+
+
+::: {.notes}
+Ignore the AFT curves - we didn't talk about this. Comparison to previous SoA.
+
+Disha Hegde, PhD thesis, Figure 3.17. The figure shows results from the second iteration onward. Compare each AFT curve with the original run at the same number of grid levels.
+:::
 
 <!-- Keynote slide 66 -->
 ## ERA5 Regression {#slide-66}
 
 ![](assets/slide-66-1.png){.panorama fig-alt="ERA5 regression: CAGP-CG, CAGP-GS, CAGP-MG-2, and actual temperature"}
 
+::: {.notes}
+These are posterior means at comparable wall times. The two-grid result is from the original multigrid implementation. Use the maps to compare the spatial detail recovered by the solvers.
+:::
+
 <!-- Keynote slide 67 -->
 ## Conclusions / Challenges {#slide-67}
 
-- E-graph component brittle, still requires some hand-simplification (but greatly reduced).
-
-- No numerical analysis.
-
-- Everything in the talk relies (intrinsically) on the Gaussian-affine assumption.
-
-- BUT: the fixed point requirement is much more general!
+- A single solver step supplies both operators. Trace $x$ to propagate uncertainty and $b$ to compute the inverse-prior downdate.
+- For fixed $A$, the step must be affine in its inputs with fixed coefficients. Gauss–Seidel and multigrid with affine components satisfy this condition.
+- The calibration result uses a Gaussian prior and the fixed point property. Convergence rates for the multigrid CAGP remain an open question here.
 
 <!-- Keynote slide 68 -->
 ## Thanks! {#slide-68 .section-slide}
