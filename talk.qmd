@@ -174,6 +174,7 @@ Gaussian prior and affine method.
 
 - $y = u(X_{\text{tr}}) + \zeta$, $X_{\text{tr}} \in \mathcal{X}^{d}$, $\zeta \sim \mathcal{N}(0,\sigma^{2}I)$
 
+::: {.fragment}
 - We then update to the **conditional distribution** $u \mid y \sim \mu^{y}:= \mathcal{GP}(m,k)$
 
 $$\begin{aligned}
@@ -181,6 +182,7 @@ m(x) &= m_{0}(x) + k_{0}(x,X_{\text{tr}})A^{- 1}(y - m_{0}(X_{\text{tr}})) \\
 k(x,x') &= k_{0}(x,x') - k_{0}(x,X_{\text{tr}})A^{- 1}k_{0}(X_{\text{tr}},x') \\
 A &= k_{0}(X_{\text{tr}},X_{\text{tr}}) + \sigma^{2}I
 \end{aligned}$$
+:::
 
 ::: {.notes}
 Leading order in both m and d - cubic cost in m comes from matrix inversion.
@@ -444,12 +446,14 @@ Step through this a bit carefully because it’s neatAdd this thing related to t
 
 $$P_{i}(x) = G_{i}x + f_{i}\quad G_{i} \in \mathbb{R}^{d \times d},f_{i} \in \mathbb{R}^{d}$$
 
+::: {.fragment data-fragment-index="0"}
 - Using a Gaussian prior $\mu_{0} = \mathcal{N}(x_{0},\Sigma_{0})$ we have
 
 $$\mu_{i} = \mathcal{N}(x_{i},\Sigma_{i})\quad\Sigma_{i} = G_{i}\Sigma_{i - 1}G_{i}^{\top}$$
+:::
 
 ::::
-:::: {.column width="32%"}
+:::: {.column .fragment data-fragment-index="0" width="32%"}
 
 ![](assets/slide-23-diagram.svg){.diagram fig-alt="Expectation commutes with affine pushforward maps"}
 
@@ -652,10 +656,12 @@ m(x;v) &= m_{0}(x) + k_{0}(x,X_{\text{tr}})v \\
 k(x,x') &= k_{0}(x,x') - k_{0}(x,X_{\text{tr}})A^{- 1}k_{0}(X_{\text{tr}},x')
 \end{aligned}$$
 
+::: {.fragment}
 $$\mapsto\quad \begin{aligned}
 \tilde{m}(x) &= m_{0}(x) + k(x,X_{\text{tr}})\overline{v} \\
 \tilde{k}(x,x') &= k_{0}(x,x') - k_{0}(x,X_{\text{tr}})Dk_{0}(X_{\text{tr}},x')
 \end{aligned}$$
+:::
 
 <!-- Keynote slide 36 -->
 ## Calibration of CAGPs {#slide-36 .compact}
@@ -687,11 +693,13 @@ Let $(P_{j})$ be a sequence of first-order affine iteration maps for $Ax^{\star}
 $$P^{i}(x) = (I - \overline{M}_{i}A)x + \overline{M}_{i}b.$$
 :::
 
+::: {.fragment}
 For symmetric positive definite $A$, the inverse prior $\mu_{0} = \mathcal{N}(x_{0},A^{-1})$ gives
 
 $$\Sigma_{i} = A^{-1} - D_{i},$$
 
 where the downdate $D_{i}$ can be expressed in terms of $A$ and $\overline{M}_{i}$.
+:::
 
 <!-- Keynote slide 38 -->
 ## ...but how do we get the downdate? {#slide-38}
@@ -856,10 +864,12 @@ Fix $A$. One affine step with fixed point $A^{-1}b$ has the form
 
 $$\phi_i(x,b)=G_i x+M_i b, \qquad G_i=I-M_i A.$$
 
+::: {.fragment}
 - Trace the **iterate** $x$ with $b$ fixed to get the action of $G_i$.
 - Trace the **right-hand side** $b$ with $x$ fixed to get the action of $M_i$.
 
 Disha Hegde, PhD thesis, §3.10.1.2.
+:::
 
 ::: {.notes}
 Both traces follow the same solver routine. For a fixed sequence of steps whose coefficients are independent of the inputs, tracing the composed routine in $b$ would give the accumulated $\overline{M}_i$ from the inverse-prior slide. We will use the individual steps so we can update the downdate as we iterate.
@@ -946,9 +956,11 @@ $$D_i =
 \underbrace{G_i D_{i-1} G_i^\top}_{\text{propagate with the }x\text{-trace}}
 + \underbrace{M_i+M_i^\top-M_i A M_i^\top}_{\text{update with the }b\text{-trace}}.$$
 
+::: {.fragment}
 At test points $X_*$, set $V=k_0(X_*,X_{\rm tr})$. The predictive covariance is
 
 $$\tilde{k}_i(X_*,X_*)=k_0(X_*,X_*)-V D_i V^\top.$$
+:::
 
 ::: {.notes}
 Substitute $\Sigma_{i-1}=A^{-1}-D_{i-1}$ into $\Sigma_i=G_i\Sigma_{i-1}G_i^\top$ and use $G_i=I-M_iA$ with symmetric positive definite $A$. For the projection, the transpose traces give $Z=VG_i$ and $W=VM_i$. The two terms become $ZD_{i-1}Z^\top$ and $WV^\top+VW^\top-WAW^\top$. This uses operator actions throughout and never forms $G_i$, $M_i$ or $A^{-1}$. For a stationary step, the same two traces can be reused at every iteration (Hegde, Algorithm 10).

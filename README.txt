@@ -36,7 +36,8 @@ The calibration figure on displayed slide 26 reproduces the original three
 click-driven builds with one-second fades and automatic sequencing. The
 right-hand statistics appear alongside the corresponding figure builds;
 figure labels are enlarged for readability.
-Other Keynote build animations and transitions have been flattened.
+Displayed slides 9, 21, 33, 35, 41 and 44 each have a single click-driven
+reveal. Transitions between slides are instant.
 To regenerate the affine iteration animation on displayed slide 14, run
 `python3 scripts/plot_affine_iterations.py` with NumPy, Matplotlib and Pillow
 installed, then render the talk.
