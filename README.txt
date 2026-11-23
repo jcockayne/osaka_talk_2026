@@ -43,3 +43,22 @@ The original iterative-method GIF remains animated.
 
 The rendered HTML embeds its images, styles, scripts, fonts, and mathematics.
 Use the preview command when presenting with the speaker view.
+
+Website deployment
+
+The Deploy compiled talk to personal website workflow publishes the standalone
+index.html to talks/osaka_talk_2026/ on the github.io branch of
+jcockayne/jcockayne.github.io. It runs on main when the talk or its build files
+change, and can also be run manually from GitHub Actions.
+
+The workflow uses the WEBSITE_DEPLOY_KEY repository secret. Its public key is
+registered with write access as a deploy key on jcockayne/jcockayne.github.io.
+The /talks/ listing is maintained in talks/index.html in the website repository.
+
+To prepare a deployment locally, use Quarto 1.10.18, Python 3.9+ and a checkout
+of the website's github.io branch. Replace WEBSITE_CHECKOUT with its path:
+
+    python3 scripts/build_website_talk.py --website-dir WEBSITE_CHECKOUT
+
+This renders in a temporary folder, checks that resources are embedded, and
+writes only talks/osaka_talk_2026/index.html in the website checkout.
