@@ -36,7 +36,7 @@ The calibration figure on displayed slide 30 reproduces the original three
 click-driven builds with one-second fades and automatic sequencing. The
 right-hand statistics appear alongside the corresponding figure builds;
 figure labels are enlarged for readability.
-Displayed slides 13, 25, 37, 39, 45 and 48 each have a single click-driven
+Displayed slides 13, 14, 25, 37, 39, 45 and 48 each have a single click-driven
 reveal. Transitions between slides are instant.
 The opening movie on slide 3 stops after two Gauss–Seidel steps. Advance once
 to reveal the exact solution. Regenerate the movie and matching still with

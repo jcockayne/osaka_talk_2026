@@ -94,3 +94,16 @@
   height: auto;
   margin: 0;
 }
+
+/* Keep the location and axes fixed across both temperature reveals. */
+.reveal .temperature-plot {
+  display: grid;
+  width: 1240px;
+  max-width: 100%;
+  margin: 0 auto;
+}
+.reveal .temperature-plot img {
+  grid-area: 1 / 1;
+  width: 100%;
+  margin: 0;
+}
