@@ -54,6 +54,16 @@ CORMSIS Seminar, 7 May 2026
 Iterations of IPMs require solutions of large linear systems.Second order optimisation - Newton type methods involve the inverse Hessian at each iteration.
 :::
 
+## Papers {#papers-opening}
+
+**Affine Tracing: A New Paradigm for Probabilistic Linear Solvers**<br>
+Hegde, Pförtner and Cockayne (NeurIPS 2026)<br>
+[arxiv.org/abs/2605.10566](https://arxiv.org/abs/2605.10566)
+
+**Calibrated Computation-Aware Gaussian Processes**<br>
+Hegde, Adil and Cockayne (AISTATS 2025)<br>
+[proceedings.mlr.press/v258/hegde25a.html](https://proceedings.mlr.press/v258/hegde25a.html)
+
 <!-- Keynote slide 2 -->
 ## Co-Authors {#slide-02}
 
@@ -552,11 +562,16 @@ We can then manipulate the graph structure - apply it to iterate meanOr delete s
 ## Calibration of Gaussian-Affine PLSs {#slide-29 .compact}
 
 ::: {.theorem}
-**Definition: Strongly Calibrated PLS.**
+**Strong calibration ([Definition 2.1](https://arxiv.org/html/2605.10566v2))**
 
-Let $\mu_{0} = \mathcal{N}(x_{0},\Sigma_{0})$ and $\mu_{i} = \mathcal{N}(x_{i},\Sigma_{i})$ be the output of a PLS. If $\Sigma_{i}$ is independent of $x^{\star}$, we say that the PLS is **strongly calibrated** if:
+Let $\mu_{i} = \mathcal{N}(x_{i},\Sigma_{i})$ be the PLS output with $\Sigma_{i}$ independent of $x^{\star}$. Let the columns of $R$ and $N$ form bases for the range and kernel of $\Sigma_{i}$, respectively, and let $r=\operatorname{rank}(\Sigma_{i})$.
 
-$\Sigma_{i}^{- \frac{1}{2}}(x_{i} - X_{0}) \sim \mathcal{N}(0,I)$.
+The PLS is **strongly calibrated** if, for $x^{\star} \sim \mu_{0}$ and $b=Ax^{\star}$,
+
+$$\begin{aligned}
+(R^{\top}\Sigma_{i}R)^{-1/2}R^{\top}(x_{i}-x^{\star}) &\sim \mathcal{N}(0,I_{r}), \\
+N^{\top}(x_{i}-x^{\star}) &= 0.
+\end{aligned}$$
 :::
 
 ::: {.notes}
@@ -567,9 +582,11 @@ We can then manipulate the graph structure - apply it to iterate meanOr delete s
 ## Calibration of Gaussian-Affine PLSs {#slide-30}
 
 ::: {.theorem}
-**Theorem (Coming Soon)**
+**[Theorem 3.3](https://arxiv.org/html/2605.10566v2)**
 
-Let $P^{i}$ be an affine fixed-point iterative method. Then if $x^{\star} \sim \mu_{0} = \mathcal{N}(x_{0},\Sigma_{0})$, the associated PIM $\mu_{i} = P_{\sharp}^{i}\mu_{0}$ is strongly calibrated.
+Let $\mu_{0}=\mathcal{N}(x_{0},\Sigma_{0})$ with $\Sigma_{0}$ symmetric positive definite. For an affine iterative method solving $Ax^{\star}=b$, let $P^{i}$ be the map taking $x_{0}$ to $x_{i}$. Assume $P^{i}(x^{\star})=x^{\star}$ and that its linear part is independent of $b$.
+
+Then the associated PIM $\mu_{i}=(P^{i})_{\sharp}\mu_{0}$ is **strongly calibrated**.
 :::
 
 ::: {.notes}
@@ -663,15 +680,21 @@ Cockayne, J., Graham, M. M., Oates, C. J., Sullivan, T. J., & Teymur, O. (2022).
 How do we obtain such a posterior belief?
 
 ::: {.theorem}
-**Theorem (Coming Soon)**
+**[Lemma 3.2](https://arxiv.org/html/2605.10566v2)**
 
-Suppose that $(P_{i})$ is a sequence of affine iterative methods with fixed point $x^{\star}$. Then there exists a matrix ${\overline{M}}_{i}$ and a vector ${\overline{f}}_{i}$ such that $P^{i}(x) = (I - {\overline{M}}_{i}A)x + {\overline{f}}_{i}$.
+Let $(P_{j})$ be a sequence of first-order affine iteration maps for $Ax^{\star}=b$ with $P_{j}(x^{\star})=x^{\star}$ for every $j$. For each $i$ there is a matrix $\overline{M}_{i}$ such that
+
+$$P^{i}(x) = (I - \overline{M}_{i}A)x + \overline{M}_{i}b.$$
 :::
 
-An immediate corollary is that any PIM with $\mu_{0} = \mathcal{N}(x_{0},A^{- 1})$ has $\Sigma_{i} = A^{- 1} - D_{i}$ for some $D_{i}$.
+For symmetric positive definite $A$, the inverse prior $\mu_{0} = \mathcal{N}(x_{0},A^{-1})$ gives
+
+$$\Sigma_{i} = A^{-1} - D_{i},$$
+
+where the downdate $D_{i}$ can be expressed in terms of $A$ and $\overline{M}_{i}$.
 
 <!-- Keynote slide 38 -->
-## ...but how do we get the downrate? {#slide-38}
+## ...but how do we get the downdate? {#slide-38}
 
 - Straightforward to show:
 
@@ -986,3 +1009,13 @@ Canonical form
 
 <!-- Keynote slide 68 -->
 ## Thanks! {#slide-68 .section-slide}
+
+## Papers {#papers-closing}
+
+**Affine Tracing: A New Paradigm for Probabilistic Linear Solvers**<br>
+Hegde, Pförtner and Cockayne (NeurIPS 2026)<br>
+[arxiv.org/abs/2605.10566](https://arxiv.org/abs/2605.10566)
+
+**Calibrated Computation-Aware Gaussian Processes**<br>
+Hegde, Adil and Cockayne (AISTATS 2025)<br>
+[proceedings.mlr.press/v258/hegde25a.html](https://proceedings.mlr.press/v258/hegde25a.html)
