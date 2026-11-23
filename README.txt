@@ -39,7 +39,9 @@ click-driven builds with one-second fades and automatic sequencing. The
 right-hand statistics appear alongside the corresponding figure builds;
 figure labels are enlarged for readability.
 Other Keynote build animations and transitions have been flattened.
-The original iterative-method GIF remains animated.
+To regenerate the affine iteration animation on displayed slide 14, run
+`python3 scripts/plot_affine_iterations.py` with NumPy, Matplotlib and Pillow
+installed, then render the talk.
 
 The rendered HTML embeds its images, styles, scripts, fonts, and mathematics.
 Use the preview command when presenting with the speaker view.

@@ -310,7 +310,7 @@ Some work using iterative solvers.Structure in G - e.g. circulant methodsIterati
 ::::
 :::: {.column width="36%"}
 
-![](assets/slide-16-1.gif){.figure fig-alt="Animated convergence of an iterative linear solver"}
+![](assets/slide-16-1.gif){.figure fig-alt="Jacobi, Richardson and Gauss-Seidel iterates follow three paths from the origin to the solution at (2, 1)."}
 
 ::::
 :::
