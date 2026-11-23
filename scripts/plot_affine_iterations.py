@@ -28,7 +28,8 @@ def main():
         ("Richardson", identity, "#b44d12", "-", "^"),
         ("Gauss-Seidel", np.tril(A), "#745296", "-.", "s"),
     ]
-    steps = 24
+    # At this plot scale all three paths reach the solution marker in 12 steps.
+    steps = 12
     fig, ax = plt.subplots(figsize=(6.5, 5.8), dpi=150)
     fig.subplots_adjust(left=0.10, right=0.98, top=0.86, bottom=0.13)
     ax.set(xlim=(-0.25, 3.0), ylim=(-0.35, 2.3), aspect="equal",
@@ -70,16 +71,34 @@ def main():
     ax.annotate("Solution", solution, xytext=(10, 0), textcoords="offset points",
                 fontsize=13, va="center", bbox=dict(facecolor="white", edgecolor="none", pad=1))
 
+    # Use one palette throughout to keep the static contours and labels stable.
+    for path, line, head in traces:
+        line.set_data(path.T)
+        head.set_data(path[-1:].T)
+    fig.canvas.draw()
+    palette = Image.fromarray(np.asarray(fig.canvas.buffer_rgba())).convert("RGB").quantize()
+
+    # Linear interpolation animates the connecting segments between solver iterates.
+    # Sixteen 40 ms frames give every method 640 ms per iteration.
+    frames_per_step = 16
+    frame_ms = 40
     frames = []
-    for k in range(steps + 1):
+    for frame in range(steps * frames_per_step + 1):
+        k, subframe = divmod(frame, frames_per_step)
         for path, line, head in traces:
-            line.set_data(path[:k + 1].T)
-            head.set_data(path[k:k + 1].T)
+            trail = path[:k + 1]
+            if subframe:
+                fraction = subframe / frames_per_step
+                point = path[k] + fraction * (path[k + 1] - path[k])
+                trail = np.vstack((trail, point))
+            line.set_data(trail.T)
+            head.set_data(trail[-1:].T)
         fig.canvas.draw()
-        frames.append(Image.fromarray(np.asarray(fig.canvas.buffer_rgba())).convert("RGB"))
+        rgb = Image.fromarray(np.asarray(fig.canvas.buffer_rgba())).convert("RGB")
+        frames.append(rgb.quantize(palette=palette, dither=Image.Dither.NONE))
     plt.close(fig)
-    # Let the audience follow the early steps and inspect the completed paths.
-    durations = [700] + [650] * 4 + [180] * (steps - 5) + [2600]
+    # Pause briefly at the endpoints of the loop.
+    durations = [480] + [frame_ms] * (len(frames) - 2) + [1200]
     frames[0].save(OUTPUT, save_all=True, append_images=frames[1:],
                    duration=durations, loop=0, optimize=False)
 
