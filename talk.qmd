@@ -1028,6 +1028,10 @@ Twenty multigrid cycles from $\mathcal{N}(0,I)$. The $x$-trace propagates the co
 
 ![](assets/slide-63-1.png){.result-figure fig-alt="Wall-time comparison of ProbNum and AffineTracer for two-grid multigrid"}
 
+::: {.notes}
+We ran the same twenty two-grid multigrid cycles both ways. Tracing the iterate took less time than the hand-coded covariance propagation across the system sizes shown. This experiment uses the first of the two traces, the one with respect to the iterate.
+:::
+
 <!-- Keynote slide 64 -->
 ## CAGP Convergence {#slide-64}
 
@@ -1048,7 +1052,7 @@ Twenty multigrid cycles from $\mathcal{N}(0,I)$. The $x$-trace propagates the co
 
 
 ::: {.notes}
-Ignore the AFT curves - we didn't talk about this. Comparison to previous SoA.
+Follow the two three-grid curves in the left panel. The purple curve (MG-3-AFT) uses both traces. It reaches a root mean square error of about 0.12 in roughly 20 seconds. The brown curve (MG-3), the original three-grid implementation, takes about 35 seconds to reach the same error.
 
 Disha Hegde, PhD thesis, Figure 3.17. The figure shows results from the second iteration onward. Compare each AFT curve with the original run at the same number of grid levels.
 :::
@@ -1059,7 +1063,7 @@ Disha Hegde, PhD thesis, Figure 3.17. The figure shows results from the second i
 ![](assets/slide-66-1.png){.panorama fig-alt="ERA5 regression: CAGP-CG, CAGP-GS, CAGP-MG-2, and actual temperature"}
 
 ::: {.notes}
-These are posterior means at comparable wall times. The two-grid result is from the original multigrid implementation. Use the maps to compare the spatial detail recovered by the solvers.
+These are posterior mean temperatures from the original solvers after about 440 seconds each. We fitted one time point using 36,450 locations from the ERA5 archive shown at the start of the talk. Point to the northern edge of the warm equatorial band in the reference field on the right, then follow that edge across the three estimates. The two-grid map uses the original multigrid implementation.
 :::
 
 <!-- Keynote slide 67 -->
